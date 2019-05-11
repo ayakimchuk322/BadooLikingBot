@@ -174,7 +174,12 @@ public class BadooExecutor implements Executor {
             return false;
         }
 
-        String infoText = info.getText().toLowerCase();
+        String infoText;
+        try {
+            infoText = info.getText().toLowerCase();
+        } catch (Exception e) {
+            return false;
+        }
         for (String word : separatedBlackListedWords) {
             if (infoText.contains(word)) {
                 return true;
@@ -207,7 +212,14 @@ public class BadooExecutor implements Executor {
 
     private void goToProfile() {
         WebElement profileHeader = driver().findElement(By.className("profile-header__user"));
-        profileHeader.click();
+
+        try {
+            profileHeader.click();
+        } catch (Exception e) {
+            // Sleep (wait for popup to close) and try again
+            Utils.sleepCurrentThread(5000);
+            profileHeader.click();
+        }
     }
 
     private void skipAtTheBottom() {
