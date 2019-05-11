@@ -1,5 +1,6 @@
 package com.example.config;
 
+import com.example.driver.DriverWrapper;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.stereotype.Component;
@@ -23,5 +24,9 @@ public class SeleniumConfig {
 
     public WebDriver getWebDriver() {
         return webDriver;
+    }
+
+    public DriverWrapper getWrappedDriver() {
+        return new DriverWrapper(webDriver);
     }
 }

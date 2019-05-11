@@ -1,6 +1,8 @@
 package com.example;
 
 import com.example.config.SeleniumConfig;
+import com.example.driver.DriverWrapper;
+import com.example.util.Utils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -24,6 +26,12 @@ public class BadooExecutor implements Executor {
     public void executeSite() {
         login();
         maximizeWindow();
+        swipeEncounters();
+    }
+
+    @Override
+    public void closeSite() {
+        closeWindow();
     }
 
     private void login() {
@@ -43,11 +51,99 @@ public class BadooExecutor implements Executor {
         driver().manage().window().maximize();
     }
 
-    public void closeWindow() {
+    private void swipeEncounters() {
+//        for (int i = 0; i < 50; i++) { // TODO: get back after debugging
+        for (int i = 0; i < 5; i++) {
+            Utils.sleepCurrentThread(1500);
+
+            swipeSingleEncounter();
+
+            Utils.sleepCurrentThread(1500);
+        }
+    }
+
+    private void swipeSingleEncounter() {
+        if (!isVerified() && !isOnline()) {
+            skipAtTheBottom();
+        }
+
+        if (!profileHasMoreThanOnePhoto()) {
+            skipAtTheBottom();
+        }
+
+        goToProfile();
+
+        if (!isRightProfile()) {
+            skitAtTheTop();
+        }
+
+        likeAtTheTop();
+    }
+
+    private boolean isVerified() {
+        WebElement verifiedIcon = wrappedDriver().findElementByClassName("verify-icon");
+        return verifiedIcon != null;
+    }
+
+    private boolean isOnline() {
+        WebElement profileHeader = driver().findElement(By.className("profile-header__online-status"));
+        WebElement onlineIcon = wrappedDriver().findElementByClassName(profileHeader, "online-status--online");
+        return onlineIcon != null;
+    }
+
+    private boolean profileHasMoreThanOnePhoto() {
+
+        return false;
+    }
+
+
+    private boolean isRightProfile() {
+        return isSameLocation()
+                && hasNoKids()
+                && !infoContainsBlackListedWords();
+    }
+
+    private boolean isSameLocation() {
+
+        return false;
+    }
+
+    private boolean infoContainsBlackListedWords() {
+
+        return true;
+    }
+
+    private boolean hasNoKids() {
+
+        return false;
+    }
+
+    private void goToProfile() {
+
+    }
+
+    private void skipAtTheBottom() {
+        WebElement skip = driver().findElement(By.className("profile-action--no"));
+        skip.click();
+    }
+
+    private void skitAtTheTop() {
+
+    }
+
+    private void likeAtTheTop() {
+
+    }
+
+    private void closeWindow() {
         driver().close();
     }
 
     private WebDriver driver() {
         return seleniumConfig.getWebDriver();
+    }
+
+    private DriverWrapper wrappedDriver() {
+        return seleniumConfig.getWrappedDriver();
     }
 }
