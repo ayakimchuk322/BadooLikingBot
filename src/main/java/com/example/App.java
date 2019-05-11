@@ -15,6 +15,8 @@ public class App {
                 .checkPrerequisites()
                 .prepareExecution()
                 .executeSite();
+
+        executor.closeSite();
     }
 
 }

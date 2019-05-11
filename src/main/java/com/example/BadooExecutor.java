@@ -3,8 +3,9 @@ package com.example;
 import com.example.config.SeleniumConfig;
 import com.example.driver.DriverWrapper;
 import com.example.util.Utils;
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -52,7 +53,11 @@ public class BadooExecutor implements Executor {
 
     public BadooExecutor prepareExecution() {
         if (!StringUtils.isEmpty(blackListedWords)) {
-            separatedBlackListedWords = Arrays.asList(blackListedWords.toLowerCase().split(","));
+            separatedBlackListedWords = Stream
+                    .of(blackListedWords.split(","))
+                    .map(String::toLowerCase)
+                    .map(String::trim)
+                    .collect(Collectors.toList());
         }
 
         return this;
@@ -62,12 +67,18 @@ public class BadooExecutor implements Executor {
     public void executeSite() {
         login();
         maximizeWindow();
-        swipeEncounters();
+
+        try {
+            swipeEncounters();
+        } catch (Exception e) {
+            closeSite();
+        }
     }
 
     @Override
     public void closeSite() {
         closeWindow();
+        quitDriver();
     }
 
     private void login() {
@@ -244,6 +255,10 @@ public class BadooExecutor implements Executor {
 
     private void closeWindow() {
         driver().close();
+    }
+
+    private void quitDriver() {
+        driver().quit();
     }
 
     private WebDriver driver() {
