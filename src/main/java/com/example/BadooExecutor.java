@@ -92,6 +92,10 @@ public class BadooExecutor implements Executor {
 
             swipeSingleEncounter();
 
+            Utils.sleepCurrentThread(500);
+
+            checkForOverlay();
+
             Utils.sleepCurrentThread(2000);
         }
     }
@@ -99,20 +103,35 @@ public class BadooExecutor implements Executor {
     private void swipeSingleEncounter() {
         if (!isVerified() || !isOnline()) {
             skipAtTheBottom();
+            return;
         }
 
         if (!profileHasMoreThanOnePhoto()) {
             skipAtTheBottom();
+            return;
         }
 
         goToProfile();
-        Utils.sleepCurrentThread(500);
+        Utils.sleepCurrentThread(1000);
 
         if (!isRightProfile()) {
             skitAtTheTop();
+            return;
         }
 
         likeAtTheTop();
+    }
+
+    private void checkForOverlay() {
+        WebElement overlay = wrappedDriver().findElementByClassName("ovl__frame");
+        if (overlay != null) {
+            closeOverlay();
+        }
+    }
+
+    private void closeOverlay() {
+        WebElement skipNotify = driver().findElement(By.className("js-chrome-pushes-deny"));
+        skipNotify.click();
     }
 
     private boolean isVerified() {
