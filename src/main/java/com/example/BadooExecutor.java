@@ -33,6 +33,8 @@ public class BadooExecutor implements Executor {
 
     private List<String> separatedBlackListedWords;
 
+    private int likes;
+
 
     public BadooExecutor checkPrerequisites() {
         if (StringUtils.isEmpty(badooUser)) {
@@ -86,17 +88,16 @@ public class BadooExecutor implements Executor {
     }
 
     private void swipeEncounters() {
-//        for (int i = 0; i < 50; i++) { // TODO: get back after debugging
-        for (int i = 0; i < 5; i++) {
-            Utils.sleepCurrentThread(2000);
+        Utils.sleepCurrentThread(1500);
 
+        while (likes < 50) {
             swipeSingleEncounter();
 
             Utils.sleepCurrentThread(500);
 
             checkForOverlay();
 
-            Utils.sleepCurrentThread(2000);
+            Utils.sleepCurrentThread(500);
         }
     }
 
@@ -112,7 +113,7 @@ public class BadooExecutor implements Executor {
         }
 
         goToProfile();
-        Utils.sleepCurrentThread(1000);
+        Utils.sleepCurrentThread(500);
 
         if (!isRightProfile()) {
             skitAtTheTop();
@@ -154,8 +155,8 @@ public class BadooExecutor implements Executor {
 
     private boolean isRightProfile() {
         return isSameLocation()
-                && !infoContainsBlackListedWords()
-                && hasNoKids();
+                && !infoContainsBlackListedWords();
+//              && !hasKids();
     }
 
     private boolean isSameLocation() {
@@ -183,9 +184,25 @@ public class BadooExecutor implements Executor {
         return false;
     }
 
-    private boolean hasNoKids() {
+    // DISABLED TILL FIXED
+    private boolean hasKids() {
+        WebElement personalInfo = wrappedDriver().findElementByClassName("js-profile-personal-info-container");
+        if (personalInfo == null) {
+            return false;
+        }
 
-        return true;
+        List<WebElement> personalInfoElements = personalInfo.findElements(By.className("form-row"));
+        for (WebElement infoRow : personalInfoElements) {
+            // FIXME: for some reason it does not work
+            WebElement infoLabel = infoRow.findElement(By.className("form-label"));
+
+            if (infoLabel.getText().equalsIgnoreCase("Kids")) {
+                WebElement infoValue = infoRow.findElement(By.className("info-label"));
+                return infoValue.getText().toLowerCase().contains("have");
+            }
+        }
+
+        return false;
     }
 
     private void goToProfile() {
@@ -206,6 +223,8 @@ public class BadooExecutor implements Executor {
     private void likeAtTheTop() {
         WebElement like = driver().findElement(By.className("profile-header__vote-item--yes"));
         like.click();
+
+        likes++;
     }
 
     private void closeWindow() {

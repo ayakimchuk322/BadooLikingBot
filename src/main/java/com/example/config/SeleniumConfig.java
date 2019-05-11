@@ -1,24 +1,24 @@
 package com.example.config;
 
 import com.example.driver.DriverWrapper;
+import javax.annotation.PostConstruct;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SeleniumConfig {
 
+    @Value("${SELENIUM_CHROME_DRIVER_LOCATION}")
+    private String chromeDriverLocation;
+
     private WebDriver webDriver;
 
 
-    static {
-        // TODO: replace with env variable
-        System.setProperty("webdriver.chrome.driver", "D:/dev/chrome_driver_74/chromedriver.exe");
-    }
-
-
-    @SuppressWarnings("deprecated")
-    public SeleniumConfig() {
+    @PostConstruct
+    public void initializeWebDriver() {
+        System.setProperty("webdriver.chrome.driver", chromeDriverLocation);
         webDriver = new ChromeDriver();
     }
 
