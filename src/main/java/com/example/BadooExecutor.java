@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class BadooExecutor implements Executor {
 
     @Autowired
-    private SeleniumConfig seleniumConfig = new SeleniumConfig();
+    private SeleniumConfig seleniumConfig;
 
     @Value("${BADOO_USER}")
     String badooUser;
@@ -23,6 +23,7 @@ public class BadooExecutor implements Executor {
     @Override
     public void executeSite() {
         login();
+        maximizeWindow();
     }
 
     private void login() {
@@ -36,6 +37,10 @@ public class BadooExecutor implements Executor {
 
         WebElement submit = driver().findElement(By.className("sign-form__submit"));
         submit.submit();
+    }
+
+    private void maximizeWindow() {
+        driver().manage().window().maximize();
     }
 
     public void closeWindow() {
