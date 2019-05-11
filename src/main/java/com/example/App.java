@@ -10,8 +10,11 @@ public class App {
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(App.class, args);
 
-        Executor executor = context.getBean(Executor.class);
-        executor.executeSite();
+        BadooExecutor executor = (BadooExecutor) context.getBean(Executor.class);
+        executor
+                .checkPrerequisites()
+                .prepareExecution()
+                .executeSite();
     }
 
 }

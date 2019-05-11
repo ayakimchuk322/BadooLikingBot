@@ -3,12 +3,15 @@ package com.example;
 import com.example.config.SeleniumConfig;
 import com.example.driver.DriverWrapper;
 import com.example.util.Utils;
+import java.util.Arrays;
+import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component
 public class BadooExecutor implements Executor {
@@ -17,10 +20,41 @@ public class BadooExecutor implements Executor {
     private SeleniumConfig seleniumConfig;
 
     @Value("${BADOO_USER}")
-    String badooUser;
+    private String badooUser;
 
     @Value("${BADOO_PASSWORD}")
-    String badooPassword;
+    private String badooPassword;
+
+    @Value("${BADOO_CITY}")
+    private String city;
+
+    @Value("${BADOO_BLACK_LISTED_WORDS}")
+    private String blackListedWords;
+
+    private List<String> separatedBlackListedWords;
+
+
+    public BadooExecutor checkPrerequisites() {
+        if (StringUtils.isEmpty(badooUser)) {
+            System.err.println("No badoo user provided; create environment variable BADOO_USER");
+            System.exit(-1);
+        }
+
+        if (StringUtils.isEmpty(badooPassword)) {
+            System.err.println("No badoo password provided; create environment variable BADOO_PASSWORD");
+            System.exit(-2);
+        }
+
+        return this;
+    }
+
+    public BadooExecutor prepareExecution() {
+        if (!StringUtils.isEmpty(blackListedWords)) {
+            separatedBlackListedWords = Arrays.asList(blackListedWords.toLowerCase().split(","));
+        }
+
+        return this;
+    }
 
     @Override
     public void executeSite() {
@@ -54,11 +88,11 @@ public class BadooExecutor implements Executor {
     private void swipeEncounters() {
 //        for (int i = 0; i < 50; i++) { // TODO: get back after debugging
         for (int i = 0; i < 5; i++) {
-            Utils.sleepCurrentThread(1500);
+            Utils.sleepCurrentThread(2000);
 
             swipeSingleEncounter();
 
-            Utils.sleepCurrentThread(1500);
+            Utils.sleepCurrentThread(2000);
         }
     }
 
@@ -72,6 +106,7 @@ public class BadooExecutor implements Executor {
         }
 
         goToProfile();
+        Utils.sleepCurrentThread(500);
 
         if (!isRightProfile()) {
             skitAtTheTop();
@@ -100,23 +135,38 @@ public class BadooExecutor implements Executor {
 
     private boolean isRightProfile() {
         return isSameLocation()
-                && hasNoKids()
-                && !infoContainsBlackListedWords();
+                && !infoContainsBlackListedWords()
+                && hasNoKids();
     }
 
     private boolean isSameLocation() {
-
-        return false;
+        WebElement location = driver().findElement(By.className("js-location-label"));
+        return location.getText().trim().equalsIgnoreCase(city);
     }
 
     private boolean infoContainsBlackListedWords() {
+        if (separatedBlackListedWords == null) {
+            return false;
+        }
 
-        return true;
+        WebElement info = wrappedDriver().findElementByClassName("profile-section__txt");
+        if (info == null) {
+            return false;
+        }
+
+        String infoText = info.getText().toLowerCase();
+        for (String word : separatedBlackListedWords) {
+            if (infoText.contains(word)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private boolean hasNoKids() {
 
-        return false;
+        return true;
     }
 
     private void goToProfile() {
@@ -130,11 +180,13 @@ public class BadooExecutor implements Executor {
     }
 
     private void skitAtTheTop() {
-
+        WebElement skip = driver().findElement(By.className("profile-header__vote-item--no"));
+        skip.click();
     }
 
     private void likeAtTheTop() {
-
+        WebElement like = driver().findElement(By.className("profile-header__vote-item--yes"));
+        like.click();
     }
 
     private void closeWindow() {
