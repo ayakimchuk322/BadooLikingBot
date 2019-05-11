@@ -225,16 +225,19 @@ public class BadooExecutor implements Executor {
     private void skipAtTheBottom() {
         WebElement skip = driver().findElement(By.className("profile-action--no"));
         skip.click();
+        System.out.println("skipped");
     }
 
     private void skitAtTheTop() {
         WebElement skip = driver().findElement(By.className("profile-header__vote-item--no"));
         skip.click();
+        System.out.println("skipped");
     }
 
     private void likeAtTheTop() {
         WebElement like = driver().findElement(By.className("profile-header__vote-item--yes"));
         like.click();
+        System.out.println("liked");
 
         likes++;
     }
