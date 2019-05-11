@@ -63,7 +63,7 @@ public class BadooExecutor implements Executor {
     }
 
     private void swipeSingleEncounter() {
-        if (!isVerified() && !isOnline()) {
+        if (!isVerified() || !isOnline()) {
             skipAtTheBottom();
         }
 
@@ -92,8 +92,9 @@ public class BadooExecutor implements Executor {
     }
 
     private boolean profileHasMoreThanOnePhoto() {
-
-        return false;
+        WebElement photoCount = driver().findElement(By.className("js-gallery-photo-total"));
+        String count = photoCount.getText();
+        return Integer.valueOf(count) > 1;
     }
 
 
@@ -119,7 +120,8 @@ public class BadooExecutor implements Executor {
     }
 
     private void goToProfile() {
-
+        WebElement profileHeader = driver().findElement(By.className("profile-header__user"));
+        profileHeader.click();
     }
 
     private void skipAtTheBottom() {
