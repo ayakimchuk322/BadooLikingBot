@@ -1,6 +1,5 @@
 package com.example;
 
-import ch.qos.logback.classic.Logger;
 import com.example.config.SeleniumConfig;
 import com.example.driver.DriverWrapper;
 import com.example.util.Utils;
@@ -10,6 +9,7 @@ import java.util.stream.Stream;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +20,7 @@ import org.springframework.util.StringUtils;
 public class BadooExecutor implements Executor {
 
 
-    private static final Logger logger = (Logger) LoggerFactory.getLogger(BadooExecutor.class);
+    private static final Logger logger = LoggerFactory.getLogger(BadooExecutor.class);
 
 
     @Autowired
