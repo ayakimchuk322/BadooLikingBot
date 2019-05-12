@@ -30,3 +30,5 @@ Additional parameters:
 * ```-DonePhoto``` - skips check for number of photos; default is false
 * ```-DlikesLimit``` - sets the limit for the likes; default is 50
 * ```-Drestarts``` - number of automatic restarts; default is 3
+
+```java [-DnoOnline=true] [-DonePhoto=true] [-DlikesLimit=200] [-Drestarts=10] -jar badoo_liking_bot.jar```
