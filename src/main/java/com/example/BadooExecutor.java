@@ -20,6 +20,7 @@ public class BadooExecutor implements Executor {
     @Autowired
     private SeleniumConfig seleniumConfig;
 
+
     @Value("${BADOO_USER}")
     private String badooUser;
 
@@ -32,8 +33,17 @@ public class BadooExecutor implements Executor {
     @Value("${BADOO_BLACK_LISTED_WORDS}")
     private String blackListedWords;
 
-    private List<String> separatedBlackListedWords;
+    @Value("${noOnline:false}")
+    private boolean noOnlineMode;
 
+    @Value("${onePhoto:false}")
+    private boolean onePhotoMode;
+
+    @Value("${likesLimit:50}")
+    private int likesLimit;
+
+
+    private List<String> separatedBlackListedWords;
     private int likes;
 
 
@@ -101,7 +111,7 @@ public class BadooExecutor implements Executor {
     private void swipeEncounters() {
         Utils.sleepCurrentThread(1500);
 
-        while (likes < 50) {
+        while (likes < likesLimit) {
             swipeSingleEncounter();
 
             Utils.sleepCurrentThread(500);
@@ -113,12 +123,17 @@ public class BadooExecutor implements Executor {
     }
 
     private void swipeSingleEncounter() {
-        if (!isVerified() || !isOnline()) {
+        if (!isVerified()) {
             skipAtTheBottom();
             return;
         }
 
-        if (!profileHasMoreThanOnePhoto()) {
+        if (!checkOnline()) {
+            skipAtTheBottom();
+            return;
+        }
+
+        if (!checkPhoto()) {
             skipAtTheBottom();
             return;
         }
@@ -151,10 +166,18 @@ public class BadooExecutor implements Executor {
         return verifiedIcon != null;
     }
 
+    private boolean checkOnline() {
+        return noOnlineMode || isOnline();
+    }
+
     private boolean isOnline() {
         WebElement profileHeader = driver().findElement(By.className("profile-header__online-status"));
         WebElement onlineIcon = wrappedDriver().findElementByClassName(profileHeader, "online-status--online");
         return onlineIcon != null;
+    }
+
+    private boolean checkPhoto() {
+        return onePhotoMode || profileHasMoreThanOnePhoto();
     }
 
     private boolean profileHasMoreThanOnePhoto() {
