@@ -28,4 +28,5 @@ Additional parameters:
 
 * ```-DnoOnline``` - skips check for online status; default is false
 * ```-DonePhoto``` - skips check for number of photos; default is false
-* ```-DlikesLimit``` - sets the limit for the likes; default is 50 
+* ```-DlikesLimit``` - sets the limit for the likes; default is 50
+* ```-Drestarts``` - number of automatic restarts; default is 3

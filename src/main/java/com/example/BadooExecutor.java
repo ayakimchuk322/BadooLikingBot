@@ -1,5 +1,6 @@
 package com.example;
 
+import ch.qos.logback.classic.Logger;
 import com.example.config.SeleniumConfig;
 import com.example.driver.DriverWrapper;
 import com.example.util.Utils;
@@ -9,6 +10,7 @@ import java.util.stream.Stream;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -16,6 +18,10 @@ import org.springframework.util.StringUtils;
 
 @Component
 public class BadooExecutor implements Executor {
+
+
+    private static final Logger logger = (Logger) LoggerFactory.getLogger(BadooExecutor.class);
+
 
     @Autowired
     private SeleniumConfig seleniumConfig;
@@ -49,13 +55,13 @@ public class BadooExecutor implements Executor {
 
     public BadooExecutor checkPrerequisites() {
         if (StringUtils.isEmpty(badooUser)) {
-            System.err.println("No badoo user provided; create environment variable BADOO_USER");
-            System.exit(-1);
+            logger.error("No badoo user provided; create environment variable BADOO_USER");
+            System.exit(-10);
         }
 
         if (StringUtils.isEmpty(badooPassword)) {
-            System.err.println("No badoo password provided; create environment variable BADOO_PASSWORD");
-            System.exit(-2);
+            logger.error("No badoo password provided; create environment variable BADOO_PASSWORD");
+            System.exit(-20);
         }
 
         return this;
@@ -259,19 +265,19 @@ public class BadooExecutor implements Executor {
     private void skipAtTheBottom() {
         WebElement skip = driver().findElement(By.className("profile-action--no"));
         skip.click();
-        System.out.println("skipped");
+        logger.debug("skipped");
     }
 
     private void skitAtTheTop() {
         WebElement skip = driver().findElement(By.className("profile-header__vote-item--no"));
         skip.click();
-        System.out.println("skipped");
+        logger.debug("skipped");
     }
 
     private void likeAtTheTop() {
         WebElement like = driver().findElement(By.className("profile-header__vote-item--yes"));
         like.click();
-        System.out.println("liked");
+        logger.info("LIKED!");
 
         likes++;
     }
