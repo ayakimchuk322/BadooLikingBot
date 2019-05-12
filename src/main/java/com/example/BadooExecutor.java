@@ -87,7 +87,7 @@ public class BadooExecutor implements Executor {
         try {
             swipeEncounters();
         } catch (Exception e) {
-            closeSite();
+            closeWindow();
         }
     }
 
@@ -145,7 +145,7 @@ public class BadooExecutor implements Executor {
         }
 
         goToProfile();
-        Utils.sleepCurrentThread(500);
+        Utils.sleepCurrentThread(1000);
 
         if (!isRightProfile()) {
             skitAtTheTop();

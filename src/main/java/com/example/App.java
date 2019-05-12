@@ -26,12 +26,16 @@ public class App {
     }
 
     private static void runExecutorContinuously(Executor executor) {
+        ((BadooExecutor) executor)
+                .checkPrerequisites()
+                .prepareExecution();
+
         int fails = 0;
 
         while (fails < numberOfRestarts + 1) {
             try {
                 runExecutor(executor);
-            } catch (Exception e) {
+            } catch (Exception e) { // FIXME: restarting does not work
                 logger.error("Executor encountered error", e);
                 fails++;
 
@@ -40,15 +44,12 @@ public class App {
                 }
             }
         }
+
+        executor.closeSite();
     }
 
     private static void runExecutor(Executor executor) {
-        ((BadooExecutor) executor)
-                .checkPrerequisites()
-                .prepareExecution()
-                .executeSite();
-
-        executor.closeSite();
+        executor.executeSite();
     }
 
 }
